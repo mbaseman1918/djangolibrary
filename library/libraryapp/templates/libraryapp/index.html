@@ -1,0 +1,43 @@
+{% extends "base_generic.html" %}
+{% block title %}Library App{% endblock title %}
+
+{% block content %}
+<div>
+  <a href="{% url 'register' %}" method="GET">
+    <button type="submit">Create New User</button>
+  </a>
+  <p></p>
+  <a href="{% url 'login' %}" method="GET">
+    <button type="submit">Login</button>
+  </a>
+  <p></p>
+  <a href="{% url 'logout' %}" method="GET">
+    <button type="submit">Logout</button>
+  </a>
+</div>
+Add a Book:
+<form action="{% url 'libraryapp:add_book' %}" method="POST">
+  {% csrf_token %}
+  Title<input type="text" name="title"/>
+  Date Published<input type="datetime" name="publish_date" placeholder="YYYY-MM-DD"/>
+  Author Name<input type="text" name="author_name"/>
+  <button type="submit">Add Book</button>
+</form>
+<ul>
+  {% for book_item in books %}
+  <li>
+    <p {% if book_item.checkout %}class="checked_out"{% endif %}>{{ book_item.book.title }} by {{book_item.book.author.author_name}}</p>
+    <!-- <p>{{ book_item.completed }}</p> -->
+    <p>{{ book_item.user }}</p>
+    <form action="{% url 'libraryapp:checkout_book' book_item.pk %}" method="GET">
+      {% csrf_token %}
+      <button type="submit">{% if book_item.checkout %}Return{% endif %}{% if not book_item.checkout %}Checkout{% endif %}</button>
+    </form>
+
+    <a href="{% url 'libraryapp:delete_book' pk=book_item.pk %}" method="GET">
+      <button type="submit">Delete</button>
+    </a>
+  </li>
+  {% endfor %}
+</ul>
+{% endblock content %}
